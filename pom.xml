@@ -11,6 +11,8 @@
 
     <modules>
         <module>proxy</module>
+        <module>trace-agent</module>
+        <module>trace-app</module>
     </modules>
 
     <properties>
