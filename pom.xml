@@ -13,6 +13,8 @@
         <module>proxy</module>
         <module>inst-agent</module>
         <module>inst-app</module>
+        <module>attach-agent</module>
+        <module>attach-app</module>
     </modules>
 
     <properties>
