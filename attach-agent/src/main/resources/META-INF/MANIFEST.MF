@@ -1,0 +1,5 @@
+Manifest-Version: 1.0
+Premain-Class: io.h2cone.attach.agent.OwnerAgent
+Agent-Class: io.h2cone.attach.agent.OwnerAgent
+Can-Redefine-Classes: true
+Can-Retransform-Classes: true
