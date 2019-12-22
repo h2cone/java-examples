@@ -13,9 +13,14 @@
         <module>proxy</module>
         <module>inst-agent</module>
         <module>inst-app</module>
+        <module>annotation-processor</module>
+        <module>annotation-processor-demo</module>
     </modules>
 
     <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
         <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
