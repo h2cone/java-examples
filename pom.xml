@@ -17,6 +17,7 @@
         <module>attach-app</module>
         <module>annotation-processor</module>
         <module>annotation-processor-demo</module>
+        <module>thread-concurrent-nio</module>
     </modules>
 
     <properties>
