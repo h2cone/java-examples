@@ -23,14 +23,14 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class CounterTest {
-    private static final long timeout = 10000;
+    private static final long wait = 3000;
 
     private final long threads = 2;
-    private final long times = 1000;
+    private final long times = 1000000;
     private final long excepted = threads * times;
 
-    @Test(timeout = CounterTest.timeout)
-    public void testIncrement() {
+    @Test
+    public void testIncrement() throws InterruptedException {
         Counter counter = new Counter();
 
         startThreads(counter, () -> {
@@ -42,18 +42,17 @@ public class CounterTest {
         Assert.assertNotEquals(excepted, counter.value());
     }
 
-    private void startThreads(Counter counter, Runnable runnable) {
+    private void startThreads(Counter counter, Runnable runnable) throws InterruptedException {
         for (int i = 0; i < threads; i++) {
             new Thread(runnable).start();
         }
-        while (counter.value() != excepted) {
-        }
+        Thread.sleep(CounterTest.wait);
         System.out.printf("threadName: %s, exceptedCounterValue: %s, actualCounterValue: %s\n", Thread.currentThread().getName(), excepted, counter.value());
     }
 
 
-    @Test(timeout = CounterTest.timeout)
-    public void testIncrementUseSyncMethod() {
+    @Test
+    public void testIncrementUseSyncMethod() throws InterruptedException {
         Counter counter = new Counter();
 
         startThreads(counter, () -> {
@@ -65,8 +64,8 @@ public class CounterTest {
         Assert.assertEquals(excepted, counter.value());
     }
 
-    @Test(timeout = CounterTest.timeout)
-    public void testIncrementUseSyncStmt() {
+    @Test
+    public void testIncrementUseSyncStmt() throws InterruptedException {
         Counter counter = new Counter();
 
         startThreads(counter, () -> {
@@ -78,8 +77,8 @@ public class CounterTest {
         Assert.assertEquals(excepted, counter.value());
     }
 
-    @Test(timeout = CounterTest.timeout)
-    public void testIncrementUseSyncBlock() {
+    @Test
+    public void testIncrementUseSyncBlock() throws InterruptedException {
         Counter counter = new Counter();
 
         startThreads(counter, () -> {
@@ -93,8 +92,8 @@ public class CounterTest {
         Assert.assertEquals(excepted, counter.value());
     }
 
-    @Test(timeout = CounterTest.timeout)
-    public void testIncrementUseReentrantLock() {
+    @Test
+    public void testIncrementUseReentrantLock() throws InterruptedException {
         Counter counter = new Counter();
         Lock lock = new ReentrantLock();
 
