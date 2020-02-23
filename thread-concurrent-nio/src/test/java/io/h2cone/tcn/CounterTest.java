@@ -58,7 +58,20 @@ public class CounterTest {
 
         startThreads(counter, () -> {
             for (int j = 0; j < times; j++) {
-                counter.incrementUseSync();
+                counter.incrementUseSyncMethod();
+            }
+            System.out.printf("threadName: %s, counterValue: %s\n", Thread.currentThread().getName(), counter.value());
+        });
+        Assert.assertEquals(excepted, counter.value());
+    }
+
+    @Test(timeout = CounterTest.timeout)
+    public void testIncrementUseSyncStmt() {
+        Counter counter = new Counter();
+
+        startThreads(counter, () -> {
+            for (int j = 0; j < times; j++) {
+                counter.incrementUseSyncStmt();
             }
             System.out.printf("threadName: %s, counterValue: %s\n", Thread.currentThread().getName(), counter.value());
         });

@@ -23,8 +23,14 @@ public class Counter {
         count++;
     }
 
-    public synchronized void incrementUseSync() {
+    public synchronized void incrementUseSyncMethod() {
         count++;
+    }
+
+    public void incrementUseSyncStmt() {
+        synchronized (this) {
+            count++;
+        }
     }
 
     public long value() {
