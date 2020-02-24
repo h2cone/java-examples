@@ -50,7 +50,6 @@ public class CounterTest {
         System.out.printf("threadName: %s, exceptedCounterValue: %s, actualCounterValue: %s\n", Thread.currentThread().getName(), excepted, counter.value());
     }
 
-
     @Test
     public void testIncrementUseSyncMethod() throws InterruptedException {
         Counter counter = new Counter();
