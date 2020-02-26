@@ -14,24 +14,26 @@
  * limitations under the License.
  */
 
-package io.h2cone.tcn;
+package io.h2cone.concurrent;
 
-import java.util.concurrent.atomic.AtomicLong;
-
-public class AtomicCounter {
-    private AtomicLong count = new AtomicLong(0);
+public class Counter {
+    private long count;
 
     public void increment() {
-        while (true) {
-            long current = count.get();
-            long next = current + 1;
-            if (count.compareAndSet(current, next)) {
-                return;
-            }
+        count++;
+    }
+
+    public synchronized void incrementUseSyncMethod() {
+        count++;
+    }
+
+    public void incrementUseSyncStmt() {
+        synchronized (this) {
+            count++;
         }
     }
 
     public long value() {
-        return count.get();
+        return count;
     }
 }

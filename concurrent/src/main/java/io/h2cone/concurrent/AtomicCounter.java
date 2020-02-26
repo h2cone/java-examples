@@ -14,16 +14,24 @@
  * limitations under the License.
  */
 
-package io.h2cone.tcn;
+package io.h2cone.concurrent;
 
-public class HelloRunnable implements Runnable {
+import java.util.concurrent.atomic.AtomicLong;
 
-    @Override
-    public void run() {
-        System.out.println("Hello from a thread");
+public class AtomicCounter {
+    private AtomicLong count = new AtomicLong(0);
+
+    public void increment() {
+        while (true) {
+            long current = count.get();
+            long next = current + 1;
+            if (count.compareAndSet(current, next)) {
+                return;
+            }
+        }
     }
 
-    public static void main(String[] args) {
-        new Thread(new HelloRunnable()).start();
+    public long value() {
+        return count.get();
     }
 }

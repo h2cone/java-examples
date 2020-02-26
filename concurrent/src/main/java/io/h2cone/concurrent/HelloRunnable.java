@@ -14,26 +14,16 @@
  * limitations under the License.
  */
 
-package io.h2cone.tcn;
+package io.h2cone.concurrent;
 
-public class Counter {
-    private long count;
+public class HelloRunnable implements Runnable {
 
-    public void increment() {
-        count++;
+    @Override
+    public void run() {
+        System.out.println("Hello from a thread");
     }
 
-    public synchronized void incrementUseSyncMethod() {
-        count++;
-    }
-
-    public void incrementUseSyncStmt() {
-        synchronized (this) {
-            count++;
-        }
-    }
-
-    public long value() {
-        return count;
+    public static void main(String[] args) {
+        new Thread(new HelloRunnable()).start();
     }
 }
