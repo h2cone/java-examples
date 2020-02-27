@@ -22,7 +22,7 @@ import org.junit.Test;
 public class AtomicCounterTest {
     private static final long wait = 3000;
 
-    private final long threads = 2;
+    private final long threads = 3;
     private final long times = 2000000;
     private final long excepted = threads * times;
 
