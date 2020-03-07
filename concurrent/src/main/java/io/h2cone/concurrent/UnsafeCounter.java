@@ -41,7 +41,7 @@ public class UnsafeCounter {
         }
     }
 
-    public long increment() {
+    public long incrementAndGet() {
         long current;
         do {
             current = unsafe.getLongVolatile(this, valueOffset);

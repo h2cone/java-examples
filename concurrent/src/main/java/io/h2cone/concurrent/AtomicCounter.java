@@ -35,4 +35,8 @@ public class AtomicCounter {
     public long value() {
         return count.get();
     }
+
+    public long incrementAndGet() {
+        return count.incrementAndGet();
+    }
 }

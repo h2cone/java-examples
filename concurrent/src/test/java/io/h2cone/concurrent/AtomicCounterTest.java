@@ -53,7 +53,7 @@ public class AtomicCounterTest {
 
         startThreads(counter, () -> {
             for (int j = 0; j < times; j++) {
-                counter.increment();
+                counter.incrementAndGet();
             }
             System.out.printf("threadName: %s, counterValue: %s\n", Thread.currentThread().getName(), counter.value);
         });
