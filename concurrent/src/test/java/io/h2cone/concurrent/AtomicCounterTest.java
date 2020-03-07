@@ -46,4 +46,25 @@ public class AtomicCounterTest {
         Thread.sleep(AtomicCounterTest.wait);
         System.out.printf("threadName: %s, exceptedCounterValue: %s, actualCounterValue: %s\n", Thread.currentThread().getName(), excepted, counter.value());
     }
+
+    @Test
+    public void testIncrementTrick() throws InterruptedException {
+        UnsafeCounter counter = new UnsafeCounter();
+
+        startThreads(counter, () -> {
+            for (int j = 0; j < times; j++) {
+                counter.increment();
+            }
+            System.out.printf("threadName: %s, counterValue: %s\n", Thread.currentThread().getName(), counter.value);
+        });
+        Assert.assertEquals(excepted, counter.value);
+    }
+
+    private void startThreads(UnsafeCounter counter, Runnable runnable) throws InterruptedException {
+        for (int i = 0; i < threads; i++) {
+            new Thread(runnable).start();
+        }
+        Thread.sleep(AtomicCounterTest.wait);
+        System.out.printf("threadName: %s, exceptedCounterValue: %s, actualCounterValue: %s\n", Thread.currentThread().getName(), excepted, counter.value);
+    }
 }
