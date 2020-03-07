@@ -22,9 +22,10 @@ public class AtomicCounter {
     private AtomicLong count = new AtomicLong(0);
 
     public void increment() {
+        long current, next;
         while (true) {
-            long current = count.get();
-            long next = current + 1;
+            current = count.get();
+            next = current + 1;
             if (count.compareAndSet(current, next)) {
                 return;
             }
