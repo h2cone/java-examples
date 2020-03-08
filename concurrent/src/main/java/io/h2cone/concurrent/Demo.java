@@ -38,6 +38,10 @@ public class Demo {
         // ReadWriteLock
         final ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
 
+        Lock readLock = readWriteLock.readLock();
+
+        Lock writeLock = readWriteLock.writeLock();
+
         // Semaphore
         final Semaphore semaphore = new Semaphore(3);
 
@@ -47,14 +51,14 @@ public class Demo {
 
         // CountDownLatch
         final CountDownLatch latch = new CountDownLatch(2);
-        // ...
+
         latch.countDown();
-        // ...
+
         latch.await(3000, TimeUnit.MILLISECONDS);
 
+        // CyclicBarrier
         final CyclicBarrier barrier = new CyclicBarrier(8);
-        // ...
+
         barrier.await();
-        // ...
     }
 }
