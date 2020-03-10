@@ -51,12 +51,12 @@ public class CounterTest {
     }
 
     @Test
-    public void testIncrementUseSyncMethod() throws InterruptedException {
+    public void testIncrementSyncMethod() throws InterruptedException {
         Counter counter = new Counter();
 
         startThreads(counter, () -> {
             for (int j = 0; j < times; j++) {
-                counter.incrementUseSyncMethod();
+                counter.incrementSyncMethod();
             }
             System.out.printf("threadName: %s, counterValue: %s\n", Thread.currentThread().getName(), counter.value());
         });
@@ -64,12 +64,12 @@ public class CounterTest {
     }
 
     @Test
-    public void testIncrementUseSyncStmt() throws InterruptedException {
+    public void testIncrementSyncStmt() throws InterruptedException {
         Counter counter = new Counter();
 
         startThreads(counter, () -> {
             for (int j = 0; j < times; j++) {
-                counter.incrementUseSyncStmt();
+                counter.incrementSyncStmt();
             }
             System.out.printf("threadName: %s, counterValue: %s\n", Thread.currentThread().getName(), counter.value());
         });
@@ -77,7 +77,7 @@ public class CounterTest {
     }
 
     @Test
-    public void testIncrementUseSyncBlock() throws InterruptedException {
+    public void testIncrementSyncBlock() throws InterruptedException {
         Counter counter = new Counter();
 
         startThreads(counter, () -> {
@@ -92,7 +92,7 @@ public class CounterTest {
     }
 
     @Test
-    public void testIncrementUseReentrantLock() throws InterruptedException {
+    public void testIncrementReentrantLock() throws InterruptedException {
         Counter counter = new Counter();
         Lock lock = new ReentrantLock();
 
