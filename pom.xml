@@ -18,6 +18,7 @@
         <module>annotation-processor</module>
         <module>annotation-processor-demo</module>
         <module>concurrent</module>
+        <module>network</module>
     </modules>
 
     <properties>
