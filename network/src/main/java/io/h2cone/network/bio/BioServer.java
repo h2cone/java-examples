@@ -80,7 +80,7 @@ public class BioServer {
                 // read
                 int len;
                 byte[] buf = new byte[1024];
-                while (!socket.isClosed() && (len = input.read(buf)) != -1) {
+                if ((len = input.read(buf)) != -1) {
                     String msg = new String(buf, 0, len);
                     System.out.printf("%s receive '%s' from %s\n", Thread.currentThread().getName(), msg, socket.toString());
                     // consuming
