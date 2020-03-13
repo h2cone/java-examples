@@ -16,6 +16,9 @@
 
 package io.h2cone.network.nio;
 
+import io.h2cone.network.bio.BioClient;
+import io.h2cone.network.staff.DefaultChannelHandler;
+
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
@@ -23,7 +26,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.Charset;
 
-public class NioClient {
+public class Client {
 
     public static void main(String[] args) {
         String host = args.length == 0 ? "127.0.0.1" : args[0];
@@ -33,21 +36,24 @@ public class NioClient {
         Runnable runnable = () -> {
             try {
                 SocketChannel socketChannel = SocketChannel.open(socketAddress);
+                socketChannel.configureBlocking(true);
                 // write
-                String msg = String.format("i am %s", Thread.currentThread().getName());
+                String msg = String.format(DefaultChannelHandler.SEND, Thread.currentThread().getName());
                 ByteBuffer buffer = ByteBuffer.wrap(msg.getBytes());
                 socketChannel.write(buffer);
                 // read
                 buffer = ByteBuffer.allocate(1024);
                 socketChannel.read(buffer);
-                buffer.flip();
-                msg = Charset.defaultCharset().newDecoder().decode(buffer).toString();
-                System.out.printf("%s receive '%s' from %s\n", Thread.currentThread().getName(), msg, socketChannel.getRemoteAddress());
+                if (buffer.position() > 0) {
+                    buffer.flip();
+                    msg = Charset.defaultCharset().newDecoder().decode(buffer).toString();
+                    System.out.printf(DefaultChannelHandler.RECEIVE + "\n", Thread.currentThread().getName(), msg);
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }
         };
-        for (int i = 0; i < 64; i++) {
+        for (int i = 0; i < BioClient.NUMBER_OF_CLIENTS; i++) {
             new Thread(runnable).start();
         }
     }

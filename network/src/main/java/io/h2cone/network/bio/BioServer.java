@@ -25,6 +25,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 public class BioServer {
+    public static int DELAY_TIME = 2000;
 
     static class Server implements Runnable {
         final int port;
@@ -65,6 +66,7 @@ public class BioServer {
             }
         }
 
+        @Deprecated
         interface Processable {
             void process(Socket socket);
         }
@@ -81,12 +83,14 @@ public class BioServer {
                 while (!socket.isClosed() && (len = input.read(buf)) != -1) {
                     String msg = new String(buf, 0, len);
                     System.out.printf("%s receive '%s' from %s\n", Thread.currentThread().getName(), msg, socket.toString());
+                    // consuming
+                    Thread.sleep(DELAY_TIME);
                     // write
                     msg = String.format("i am %s", Thread.currentThread().getName());
                     output.write(msg.getBytes());
                     output.flush();
                 }
-            } catch (IOException e) {
+            } catch (IOException | InterruptedException e) {
                 e.printStackTrace();
             }
         });

@@ -16,6 +16,9 @@
 
 package io.h2cone.network.nio;
 
+import io.h2cone.network.staff.ChannelHandler;
+import io.h2cone.network.staff.DefaultChannelHandler;
+
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
@@ -23,23 +26,24 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
-import java.nio.charset.Charset;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Reactor Pattern # Single threaded version
  * <p>
  * http://gee.cs.oswego.edu/dl/cpjslides/nio.pdf
  */
-public class BasicReactor {
+public class SingleThreadedReactor {
 
     static class Reactor implements Runnable {
         final Selector selector;
         final ServerSocketChannel serverSocketChannel;
-        final Processable processable;
+        final ChannelHandler channelHandler;
 
-        public Reactor(int port, Processable processable) throws IOException {
+        public Reactor(int port, ChannelHandler channelHandler) throws IOException {
             selector = Selector.open();
             serverSocketChannel = ServerSocketChannel.open();
 
@@ -48,7 +52,7 @@ public class BasicReactor {
             SelectionKey selectionKey = serverSocketChannel.register(selector, SelectionKey.OP_ACCEPT);
             selectionKey.attach(new Acceptor());        // (1)
 
-            this.processable = processable;
+            this.channelHandler = channelHandler;
         }
 
         @Override
@@ -59,13 +63,11 @@ public class BasicReactor {
                     Set<SelectionKey> selectionKeys = selector.selectedKeys();
                     Iterator<SelectionKey> iterator = selectionKeys.iterator();
                     while (iterator.hasNext()) {
-                        try {
-                            SelectionKey selectionKey = iterator.next();
-                            dispatch(selectionKey);     // (2)
-                        } finally {
-                            iterator.remove();
-                        }
+                        SelectionKey selectionKey = iterator.next();
+                        dispatch(selectionKey);     // (2)
+                        iterator.remove();
                     }
+                    selectionKeys.clear();
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -86,7 +88,7 @@ public class BasicReactor {
                 try {
                     SocketChannel socketChannel = serverSocketChannel.accept();
                     if (socketChannel != null) {
-                        new Handler(selector, socketChannel, processable);      // (4)
+                        new Handler(selector, socketChannel, channelHandler);      // (4)
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -97,14 +99,14 @@ public class BasicReactor {
         static class Handler implements Runnable {
             final SelectionKey selectionKey;
             final SocketChannel socketChannel;
-            final Processable processable;
+            final ChannelHandler channelHandler;
 
             ByteBuffer inputBuf = ByteBuffer.allocate(1024);
             ByteBuffer outputBuf = ByteBuffer.allocate(1024);
             static int READING = 0, WRITING = 1;
             int state = READING;
 
-            public Handler(Selector selector, SocketChannel socketChannel, Processable processable) throws IOException {
+            public Handler(Selector selector, SocketChannel socketChannel, ChannelHandler channelHandler) throws IOException {
                 this.socketChannel = socketChannel;
                 this.socketChannel.configureBlocking(false);
                 // (5)
@@ -113,84 +115,45 @@ public class BasicReactor {
                 selectionKey.interestOps(SelectionKey.OP_READ);
                 selector.wakeup();
 
-                this.processable = processable;
+                this.channelHandler = channelHandler;
             }
 
             @Override
             public void run() {
-                if (state == READING) {
-                    read();
-                } else if (state == WRITING) {
-                    write();
+                try {
+                    if (state == READING) {
+                        read();
+                    } else if (state == WRITING) {
+                        write();
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             }
 
-            private void read() {
-                processable.read(socketChannel, inputBuf);
-                if (processable.inputCompleted(inputBuf)) {
+            private void read() throws IOException {
+                channelHandler.read(socketChannel, inputBuf);
+                if (channelHandler.inputCompleted(inputBuf)) {
+                    channelHandler.process(inputBuf, outputBuf);
                     state = WRITING;
                     selectionKey.interestOps(SelectionKey.OP_WRITE);
                 }
             }
 
-            private void write() {
-                processable.write(socketChannel, outputBuf);
-                if (processable.outputCompleted(outputBuf)) {
+            private void write() throws IOException {
+                channelHandler.write(socketChannel, outputBuf);
+                if (channelHandler.outputCompleted(outputBuf)) {
                     selectionKey.cancel();      // (6)
                 }
             }
-        }
-
-        interface Processable {
-            boolean inputCompleted(ByteBuffer inputBuf);
-
-            void read(SocketChannel socketChannel, ByteBuffer inputBuf);
-
-            void write(SocketChannel socketChannel, ByteBuffer outputBuf);
-
-            boolean outputCompleted(ByteBuffer outputBuf);
         }
     }
 
     public static void main(String[] args) throws IOException {
         int port = args.length == 0 ? 8080 : Integer.parseInt(args[0]);
 
-        new Thread(new Reactor(port, new Reactor.Processable() {
-
-            @Override
-            public boolean inputCompleted(ByteBuffer inputBuf) {
-                return inputBuf.position() > 1;
-            }
-
-            @Override
-            public void read(SocketChannel socketChannel, ByteBuffer inputBuf) {
-                try {
-                    socketChannel.read(inputBuf);
-                    inputBuf.flip();
-                    String msg = Charset.defaultCharset().newDecoder().decode(inputBuf).toString();
-                    System.out.printf("%s receive '%s' from %s\n", Thread.currentThread().getName(), msg, socketChannel.getRemoteAddress());
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            @Override
-            public void write(SocketChannel socketChannel, ByteBuffer outputBuf) {
-                String msg = String.format("i am %s", Thread.currentThread().getName());
-                try {
-                    outputBuf.put(ByteBuffer.wrap(msg.getBytes()));
-                    outputBuf.flip();
-                    socketChannel.write(outputBuf);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            @Override
-            public boolean outputCompleted(ByteBuffer outputBuf) {
-                return !outputBuf.hasRemaining();
-            }
-        })).start();
+        ExecutorService executorService = Executors.newSingleThreadExecutor();
+        executorService.execute(new Reactor(port, new DefaultChannelHandler()));
 
         System.out.printf("server running on %s\n", port);
     }

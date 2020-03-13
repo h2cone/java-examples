@@ -22,6 +22,7 @@ import java.io.OutputStream;
 import java.net.Socket;
 
 public class BioClient {
+    public static int NUMBER_OF_CLIENTS = 8;
 
     public static void main(String[] args) {
         String host = args.length == 0 ? "127.0.0.1" : args[0];
@@ -47,7 +48,7 @@ public class BioClient {
                 e.printStackTrace();
             }
         };
-        for (int i = 0; i < 64; i++) {
+        for (int i = 0; i < NUMBER_OF_CLIENTS; i++) {
             new Thread(runnable).start();
         }
     }
