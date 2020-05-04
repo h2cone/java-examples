@@ -19,6 +19,7 @@
         <module>annotation-processor-demo</module>
         <module>concurrent</module>
         <module>network</module>
+        <module>singleton</module>
     </modules>
 
     <properties>
