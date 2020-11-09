@@ -20,6 +20,7 @@
         <module>concurrent</module>
         <module>network</module>
         <module>singleton</module>
+        <module>web-socket</module>
     </modules>
 
     <properties>

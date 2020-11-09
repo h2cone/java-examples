@@ -16,6 +16,8 @@
 
 package io.h2cone.singleton.dcl;
 
+import java.util.Objects;
+
 /**
  * double check lock
  */
@@ -23,9 +25,9 @@ public class Singleton {
     private static volatile Singleton instance;
 
     public static Singleton getInstance() {
-        if (instance == null) {
+        if (Objects.isNull(instance)) {
             synchronized (Singleton.class) {
-                if (instance == null) {
+                if (Objects.isNull(instance)) {
                     instance = new Singleton();
                 }
             }
