@@ -32,12 +32,12 @@ public class WebSocketServer {
     static final int PORT = Integer.parseInt(System.getProperty("port", SSL ? "8443" : "8080"));
 
     public static void main(String[] args) throws InterruptedException {
-        EventLoopGroup bossEventLoopGroup = new KQueueEventLoopGroup(1);
-        EventLoopGroup workerEventLoopGroup = new KQueueEventLoopGroup();
+        EventLoopGroup bossGroup = new KQueueEventLoopGroup(1);
+        EventLoopGroup workerGroup = new KQueueEventLoopGroup();
         try {
             ServerBootstrap bootstrap = new ServerBootstrap()
                     .channel(KQueueServerSocketChannel.class)
-                    .group(bossEventLoopGroup, workerEventLoopGroup)
+                    .group(bossGroup, workerGroup)
                     .handler(new LoggingHandler(LogLevel.INFO))
                     .childHandler(new CustomChannelInitializer())
                     .childOption(ChannelOption.SO_SNDBUF, 1024 * 1024)
@@ -47,8 +47,8 @@ public class WebSocketServer {
 
             channel.closeFuture().sync();
         } finally {
-            bossEventLoopGroup.shutdownGracefully();
-            workerEventLoopGroup.shutdownGracefully();
+            bossGroup.shutdownGracefully();
+            workerGroup.shutdownGracefully();
         }
     }
 
