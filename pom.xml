@@ -21,6 +21,7 @@
         <module>network</module>
         <module>singleton</module>
         <module>web-socket</module>
+        <module>broadcasting</module>
     </modules>
 
     <properties>
