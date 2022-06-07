@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 hehuang https://github.com/h2cone
+ * Copyright 2019 huangh https://github.com/h2cone
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,11 @@
 
 package io.h2cone.proxy.cglib;
 
-import net.sf.cglib.proxy.Enhancer;
-import net.sf.cglib.proxy.MethodInterceptor;
-import net.sf.cglib.proxy.MethodProxy;
 import org.junit.Assert;
 import org.junit.Test;
+import org.springframework.cglib.proxy.Enhancer;
+import org.springframework.cglib.proxy.MethodInterceptor;
+import org.springframework.cglib.proxy.MethodProxy;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
