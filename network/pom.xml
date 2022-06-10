@@ -25,13 +25,13 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>nio</artifactId>
+    <artifactId>network</artifactId>
 
     <dependencies>
         <dependency>
             <groupId>io.netty</groupId>
             <artifactId>netty-all</artifactId>
-            <version>4.1.47.Final</version>
+            <version>4.1.77.Final</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
